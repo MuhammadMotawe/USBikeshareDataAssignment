@@ -6,6 +6,10 @@ CITY_DATA = { 'chicago': 'chicago.csv',
               'new york city': 'new_york_city.csv',
               'washington': 'washington.csv' }
 
+# initiate months, their indices and days of week
+months = ['january', 'february', 'march', 'april', 'may', 'june']
+days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+
 def get_filters():
     """
     Asks user to specify a city, month, and day to analyze.
@@ -17,11 +21,24 @@ def get_filters():
     """
     print('Hello! Let\'s explore some US bikeshare data!')
     # get user input for city (chicago, new york city, washington). HINT: Use a while loop to handle invalid inputs
+    city = ""
+    while(city not in CITY_DATA):
+        city = input("Please select a city: (chicago, new york city or washington)\n")
+   
 
     # get user input for month (all, january, february, ... , june)
-
+    month = ""
+    while(month not in months):
+        month = input("Please input the month for which you need the data: (all, january, february, ... , june)\n")
+        if(month=='all'):
+            break
 
     # get user input for day of week (all, monday, tuesday, ... sunday)
+    day = 0
+    while(day not in days):
+        day = input("Please enter the day of week for which you need the data: (all, monday, tuesday ... etc)\n")
+        if(day=='all'):
+            break
 
 
     print('-'*40)
@@ -39,7 +56,26 @@ def load_data(city, month, day):
     Returns:
         df - Pandas DataFrame containing city data filtered by month and day
     """
+    
+    # read city data
+    df = pd.read_csv(CITY_DATA[city])
 
+    # convert Start Time to datetime
+    df['Start Time'] = pd.to_datetime(df['Start Time'])
+
+    # separate month data
+    df['month'] = df['Start Time'].dt.month
+
+    # separate day of week data
+    df['day_of_week'] = df['Start Time'].dt.day_name()
+
+    # filter by month
+    if(month != 'all'):
+        month = months.index(month) + 1
+        df = df[df['month'] == month]
+
+    # filter by day of week
+    df = df[df['day_of_week'] == day.title()] if (day != 'all') else df
 
     return df
 
@@ -51,12 +87,13 @@ def time_stats(df):
     start_time = time.time()
 
     # display the most common month
-
+    print(df['month'].value_counts().idxmax())
 
     # display the most common day of week
-
+    print(df['day_of_week'].value_counts().idxmax())
 
     # display the most common start hour
+    #print(df['Start Time'].value_counts().idxmax())
 
 
     print("\nThis took %s seconds." % (time.time() - start_time))
