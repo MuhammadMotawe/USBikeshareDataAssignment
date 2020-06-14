@@ -1,6 +1,7 @@
 import time
 import pandas as pd
 import numpy as np
+import datetime
 
 CITY_DATA = { 'chicago': 'chicago.csv',
               'new york city': 'new_york_city.csv',
@@ -62,12 +63,16 @@ def load_data(city, month, day):
 
     # convert Start Time to datetime
     df['Start Time'] = pd.to_datetime(df['Start Time'])
+    df['End Time'] = pd.to_datetime(df['End Time'])
 
     # separate month data
     df['month'] = df['Start Time'].dt.month
 
     # separate day of week data
     df['day_of_week'] = df['Start Time'].dt.day_name()
+
+    # separate hour data
+    df['hour'] = df['Start Time'].dt.hour
 
     # filter by month
     if(month != 'all'):
@@ -93,7 +98,7 @@ def time_stats(df):
     print(df['day_of_week'].value_counts().idxmax())
 
     # display the most common start hour
-    #print(df['Start Time'].value_counts().idxmax())
+    print(df['hour'].value_counts().idxmax())
 
 
     print("\nThis took %s seconds." % (time.time() - start_time))
@@ -107,12 +112,15 @@ def station_stats(df):
     start_time = time.time()
 
     # display most commonly used start station
+    print(df['Start Station'].value_counts().idxmax())
 
 
     # display most commonly used end station
+    print(df['End Station'].value_counts().idxmax())
 
 
     # display most frequent combination of start station and end station trip
+    print(df.groupby(['Start Station','End Station']).size().idxmax())
 
 
     print("\nThis took %s seconds." % (time.time() - start_time))
@@ -126,9 +134,14 @@ def trip_duration_stats(df):
     start_time = time.time()
 
     # display total travel time
+    print('\nTotal travel time:')
+    total_travel_series = df['End Time'] - df['Start Time']
+    print(sum(total_travel_series, datetime.timedelta(0,0)))
 
 
     # display mean travel time
+    print('\nAverage travel time:')
+    print(total_travel_series.mean())
 
 
     print("\nThis took %s seconds." % (time.time() - start_time))
@@ -142,12 +155,22 @@ def user_stats(df):
     start_time = time.time()
 
     # Display counts of user types
-
+    print(df['User Type'].value_counts())
 
     # Display counts of gender
+    if 'Gender' in df.columns:
+        print(df['Gender'].value_counts())
 
 
     # Display earliest, most recent, and most common year of birth
+    if 'Year Of Birth' in df.columns:
+        # earliest
+        print(df['Year Of Birth'].min())
+        # most recent
+        print(df['Year Of Birth'].max())
+        # most frequent
+        print(df['Year Of Birth'].value_counts().idxmax())
+
 
 
     print("\nThis took %s seconds." % (time.time() - start_time))
