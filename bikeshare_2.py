@@ -2,6 +2,7 @@ import time
 import pandas as pd
 import numpy as np
 import datetime
+import calendar
 
 CITY_DATA = { 'chicago': 'chicago.csv',
               'new york city': 'new_york_city.csv',
@@ -92,13 +93,19 @@ def time_stats(df):
     start_time = time.time()
 
     # display the most common month
-    print(df['month'].value_counts().idxmax())
+    print("\nThe most common month is:")
+    print(calendar.month_name[df['month'].value_counts().idxmax()])
 
     # display the most common day of week
+    print("\nThe most common day of week is:")
     print(df['day_of_week'].value_counts().idxmax())
 
     # display the most common start hour
-    print(df['hour'].value_counts().idxmax())
+    print("\nThe most common hour is:")
+    # parse the integer and convert it to hours
+    d = datetime.datetime.strptime(str(df['hour'].value_counts().idxmax()), "%H")
+    # apply a cool format
+    print(d.strftime("%I %p"))
 
 
     print("\nThis took %s seconds." % (time.time() - start_time))
@@ -112,14 +119,17 @@ def station_stats(df):
     start_time = time.time()
 
     # display most commonly used start station
+    print("\nThe most commonly used start station is:")
     print(df['Start Station'].value_counts().idxmax())
 
 
     # display most commonly used end station
+    print("\nThe most commonly used end station is:")
     print(df['End Station'].value_counts().idxmax())
 
 
     # display most frequent combination of start station and end station trip
+    print("\nThe most frequent combination of start/end station is:")
     print(df.groupby(['Start Station','End Station']).size().idxmax())
 
 
@@ -155,21 +165,26 @@ def user_stats(df):
     start_time = time.time()
 
     # Display counts of user types
+    print("\nCounts of User Types:")
     print(df['User Type'].value_counts())
 
     # Display counts of gender
     if 'Gender' in df.columns:
+        print("\nMale/Female Count:")
         print(df['Gender'].value_counts())
 
 
     # Display earliest, most recent, and most common year of birth
     if 'Birth Year' in df.columns:
         # earliest
-        print(df['Birth Year'].min())
+        print("\nThe eldest person was born in:")
+        print(int(df['Birth Year'].min()))
         # most recent
-        print(df['Birth Year'].max())
+        print("\nThe youngest person was born in:")
+        print(int(df['Birth Year'].max()))
         # most frequent
-        print(df['Birth Year'].value_counts().idxmax())
+        print("\nThe most frequent year of birth is:")
+        print(int(df['Birth Year'].value_counts().idxmax()))
 
 
 
